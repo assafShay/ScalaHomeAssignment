@@ -1,0 +1,94 @@
+{
+    "value": [
+        {
+            "ListingId":"SW21140290",
+            "Price":540000,
+            "Address":"23463 Scooter WAY",
+            "ProviderName":"CRMLS",
+            "ListingStatus":"Active",
+            "HouseType":"Condominium",
+            "ModificationTimestamp": "2021-07-01T10:02:14Z"
+        },
+        {
+            "ListingId":"ML81439493",
+            "Price":1250000,
+            "Address":"11383 Telephone AVE",
+            "ProviderName":"MLS",
+            "ListingStatus":"Closed",
+            "HouseType":"Stock Cooperative",
+            "ModificationTimestamp": "2021-07-02T21:12:08Z"
+        },
+        {
+            "ListingId":"CC40679783",
+            "Price":650000,
+            "Address":"718 E. Lewis Rd",
+            "ProviderName":"Santa Barbara",
+            "ListingStatus":"Active Under Contract",
+            "HouseType":"Tenancy in Common",
+            "ModificationTimestamp": "2021-07-10T13:38:45Z"
+        },
+        {
+            "ListingId":"CC40679797",
+            "Price":415000,
+            "Address":"1895 Azul Vista",
+            "ProviderName":"MLS",
+            "ListingStatus":"Pending",
+            "HouseType":"2 Houses on Lot",
+            "ModificationTimestamp": "2021-07-11T08:48:55Z"
+        },
+        {
+            "ListingId":"ML81439513",
+            "Price":785000,
+            "Address":"25146 Cliffrose ST",
+            "ProviderName":"CRMLS",
+            "ListingStatus":"Active",
+            "HouseType":"Halfplex",
+            "ModificationTimestamp": "2021-06-25T15:20:42Z"
+        },
+        {
+            "ListingId":"BE40679785",
+            "Price":693000,
+            "Address":"7145 Wild Lilac CT",
+            "ProviderName":"CRMLS",
+            "ListingStatus":"Returned to market",
+            "HouseType":"Modular",
+            "ModificationTimestamp": "2021-06-12T19:12:57Z"
+        },
+        {
+            "ListingId":"EB40679789",
+            "Price":963000,
+            "Address":"35853 Trevino",
+            "ProviderName":"MLS",
+            "ListingStatus":"Don't know",
+            "HouseType":"Single Family Residence",
+            "ModificationTimestamp": "2021-05-01T17:58:00Z"
+        },
+        {
+            "ListingId":"CC40679795",
+            "Price":496000,
+            "Address":"15527 Lefloss AVE",
+            "ProviderName":"Santa Barbara",
+            "ListingStatus":"Expired",
+            "HouseType":"Simple house",
+            "ModificationTimestamp": "2021-06-14T05:36:14Z"
+        },
+        {
+            "ListingId":"ML81439488",
+            "Price":1600000,
+            "Address":"4937 W 20th ST",
+            "ProviderName":"CRMLS",
+            "ListingStatus":"Canceled",
+            "HouseType":"Big house",
+            "ModificationTimestamp": "2021-07-08T07:01:10Z"
+        },
+        {
+            "ListingId":"BE40679771",
+            "Price":1450000,
+            "Address":"7145 Wild Lilac CT",
+            "ProviderName":"Santa Barbara",
+            "ListingStatus":"Hold",
+            "HouseType":"Townhouse",
+            "ModificationTimestamp": "2021-06-29T09:48:59Z"
+        }
+    ]
+}
