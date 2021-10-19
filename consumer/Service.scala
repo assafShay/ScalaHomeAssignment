@@ -9,7 +9,7 @@ import scala.jdk.CollectionConverters.IterableHasAsScala
 object Service extends App {
 
   consumeFromKafka("listing_topic")
-  val jdbcHostname = "LEDZEPPELIN"
+  val jdbcHostname = "localhost"
   val jdbcDatabase = "test"
   val jdbcUrl = s"jdbc:sqlserver://${jdbcHostname};database=${jdbcDatabase}"
 
