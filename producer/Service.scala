@@ -5,22 +5,50 @@ import org.json4s.jackson.JsonMethods._
 
 import java.util.Properties
 import org.apache.kafka.clients.producer._
+import org.apache.kafka.common.serialization.StringSerializer
 
-object Service extends App {
+class Producer(topic: String, brokers: String) {
 
-  val filePath: String = "C:\\ScalaP\\udemy-scala-for-beginners\\src\\main\\scala\\producer\\data.json"
-  var doc = parseJson(filePath)
-  doc = transformJson(doc)
-  //println(pretty(doc))
-  produceToKafka(doc)
+  val producer = new KafkaProducer[String, String](configuration)
 
-  def parseJson(filePath: String): JValue = {
-    val rawJson = os.read(os.pwd / filePath)
-    val doc = parse(rawJson)
-    doc
+  private def configuration: Properties = {
+    val props = new Properties()
+    props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, brokers)
+    props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, classOf[StringSerializer].getCanonicalName)
+    props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, classOf[StringSerializer].getCanonicalName)
+    props
   }
 
-  def transformJson(doc: JValue): JValue = {
+  def sendMessages(doc: JValue): Unit = {
+    try {
+      for {
+        JArray(objList) <- doc
+        JObject(obj) <- objList
+      } {
+        val kvList = for ((key, JString(value)) <- obj) yield (key, value)
+        val record = new ProducerRecord[String, String](topic, kvList.toString())
+        val metadata = producer.send(record)
+
+        printf(s"sent record(key=%s value=%s) " +
+          "meta(partition=%d, offset=%d)\n",
+          record.key(),
+          record.value(),
+          metadata.get().partition(),
+          metadata.get().offset())
+      }
+    }
+    catch {
+      case e: Exception => e.printStackTrace()
+    }
+    finally {
+      println("closing...")
+      producer.close()
+    }
+  }
+}
+
+class Mapper {
+  def mapper(doc: JValue): JValue = {
     val transformedDoc = doc transformField {
       case JField("ListingStatus", JString("Active Under Contract")) => ("ListingStatus", JString("Pending"))
       case JField("ListingStatus", JString("Closed")) => ("ListingStatus", JString("Sold"))
@@ -42,39 +70,23 @@ object Service extends App {
 
     transformedDoc
   }
+}
 
-  def produceToKafka(doc: JValue): Unit = {
-    val props = new Properties()
+object Service extends App {
 
-    props.put("bootstrap.servers", "localhost:9092")
-    props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer")
-    props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer")
+  val filePath: String = "C:\\ScalaP\\udemy-scala-for-beginners\\src\\main\\scala\\producer\\data.json"
+  val producer = new Producer(brokers = "localhost:9092", topic = "TestTopic")
+  val mapper = new Mapper
 
-    val producer = new KafkaProducer[String, String](props)
-    val topic = "listing_topic"
+  var doc = parseJson(filePath)
+  doc = mapper.mapper(doc)
 
-    try {
-      for {
-        JArray(objList) <- doc
-        JObject(obj) <- objList
-      } {
-        val kvList = for ((key, JString(value)) <- obj) yield (key, value)
-        val record = new ProducerRecord[String, String](topic, kvList.toString())
-        //println(record.value())
-        val metadata = producer.send(record)
+  //println(pretty(doc))
+  producer.sendMessages(doc)
 
-        printf(s"sent record(key=%s value=%s) " +
-          "meta(partition=%d, offset=%d)\n",
-          record.key(), record.value(),
-          metadata.get().partition(),
-          metadata.get().offset())
-      }
-    }
-    catch {
-      case e: Exception => e.printStackTrace()
-    }
-    finally {
-      producer.close()
-    }
+  def parseJson(filePath: String): JValue = {
+    val rawJson = os.read(os.pwd / filePath)
+    val doc = parse(rawJson)
+    doc
   }
 }
