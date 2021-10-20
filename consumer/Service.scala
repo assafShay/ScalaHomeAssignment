@@ -1,53 +1,39 @@
 package consumer
 
-import java.time.Duration
-import java.util
-import org.apache.kafka.clients.consumer.KafkaConsumer
 import java.util.Properties
-import scala.jdk.CollectionConverters.IterableHasAsScala
+import scala.jdk.CollectionConverters._
+import org.apache.kafka.clients.consumer.{ConsumerConfig, ConsumerRecords, KafkaConsumer}
+import org.apache.kafka.common.serialization.StringDeserializer
 
-object Service extends App {
+import java.time.Duration
 
-  consumeFromKafka("listing_topic")
-  val jdbcHostname = "localhost"
-  val jdbcDatabase = "test"
-  val jdbcUrl = s"jdbc:sqlserver://${jdbcHostname};database=${jdbcDatabase}"
+class Consumer(brokers: String, topic: String, groupId: String) {
 
-  def consumeFromKafka(topic: String) = {
+  val consumer = new KafkaConsumer[String, String](configuration)
+  consumer.subscribe(List(topic).asJava)
+
+  private def configuration: Properties = {
     val props = new Properties()
 
-    props.put("bootstrap.servers", "localhost:9094")
-    props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer")
-    props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer")
-    props.put("auto.offset.reset", "latest")
-    props.put("group.id", "consumer-group")
+    props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, brokers)
+    props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, classOf[StringDeserializer].getCanonicalName)
+    props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, classOf[StringDeserializer].getCanonicalName)
+    props.put(ConsumerConfig.GROUP_ID_CONFIG, groupId)
+    props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest")
+    props
+  }
 
-    val consumer: KafkaConsumer[String, String] = new KafkaConsumer[String, String](props)
-    try {
-      consumer.subscribe(util.Arrays.asList(topic))
-
-      while (true) {
-        val records = consumer.poll(Duration.ofSeconds(1))
-        for (record <- records.asScala) {
-          sendToDb(record.value())
-
-          println("Topic: " + record.topic() +
-            ",Key: " + record.key() +
-            ",Value: " + record.value() +
-            ",Offset: " + record.offset() +
-            ",Partition: " + record.partition())
-        }
+  def receiveMessages(): Unit = {
+    while (true) {
+      val records: ConsumerRecords[String, String] = consumer.poll(Duration.ofSeconds(1))
+      for (record <- records.asScala) {
+        println(record.value())
       }
     }
-    catch {
-      case e:Exception => e.printStackTrace()
-    }
-    finally {
-      consumer.close()
-    }
   }
+}
 
-  def sendToDb(record: String): Unit = {
-    // TO DO
-  }
+object Service extends App {
+  val consumer = new Consumer(brokers = "localhost:9092", topic = "TestTopic", groupId = "test-group")
+  consumer.receiveMessages()
 }
