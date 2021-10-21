@@ -33,6 +33,6 @@ class Consumer(brokers: String, topic: String, groupId: String) {
 }
 
 object Service extends App {
-  val consumer = new Consumer(brokers = "localhost:9092", topic = "MyTopic1", groupId = "test-group")
+  val consumer = new Consumer(brokers = "localhost:9092", topic = "listing-topic", groupId = "test-group")
   consumer.receiveMessages()
 }
