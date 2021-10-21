@@ -2,14 +2,13 @@ package producer
 
 import org.json4s._
 import org.json4s.jackson.JsonMethods._
-
 import java.util.Properties
 import org.apache.kafka.clients.producer._
 import org.apache.kafka.common.serialization.StringSerializer
 
 class Producer(topic: String, brokers: String) {
 
-  val producer = new KafkaProducer[String, String](configuration)
+  val producer = new KafkaProducer[String, Map[String, String]](configuration)
 
   private def configuration: Properties = {
     val props = new Properties()
@@ -26,15 +25,9 @@ class Producer(topic: String, brokers: String) {
         JObject(obj) <- objList
       } {
         val kvList = for ((key, JString(value)) <- obj) yield (key, value)
-        val record = new ProducerRecord[String, String](topic, kvList.toString())
-        val metadata = producer.send(record)
+        val record = new ProducerRecord[String, Map[String, String]](topic, kvList.toMap)
 
-        printf(s"sent record(key=%s value=%s) " +
-          "meta(partition=%d, offset=%d)\n",
-          record.key(),
-          record.value(),
-          metadata.get().partition(),
-          metadata.get().offset())
+        producer.send(record)
       }
     }
     catch {
@@ -67,26 +60,20 @@ class Mapper {
       case JField("ProviderName", v) if v == JString("MLS") => ("ProviderId", JInt(2))
       case JField("ProviderName", v) if v == JString("Santa Barbara") => ("ProviderId", JInt(3))
     }
-
     transformedDoc
   }
 }
 
 object Service extends App {
-
+  // parse document
   val filePath: String = "C:\\ScalaP\\udemy-scala-for-beginners\\src\\main\\scala\\producer\\data.json"
-  val producer = new Producer(brokers = "localhost:9092", topic = "TestTopic")
-  val mapper = new Mapper
+  var doc = parse(os.read(os.pwd / filePath))
 
-  var doc = parseJson(filePath)
+  // transform data
+  val mapper = new Mapper
   doc = mapper.mapper(doc)
 
-  //println(pretty(doc))
+  // produce to kafka
+  val producer = new Producer(brokers = "localhost:9092", topic = "MyTopic1")
   producer.sendMessages(doc)
-
-  def parseJson(filePath: String): JValue = {
-    val rawJson = os.read(os.pwd / filePath)
-    val doc = parse(rawJson)
-    doc
-  }
 }
