@@ -8,7 +8,7 @@ import scala.jdk.CollectionConverters._
 
 class Consumer(brokers: String, topic: String, groupId: String) {
 
-  val consumer = new KafkaConsumer[String, String](configuration)
+  val consumer = new KafkaConsumer[String, Map[String, String]](configuration)
   consumer.subscribe(List(topic).asJava)
 
   private def configuration: Properties = {
@@ -24,7 +24,7 @@ class Consumer(brokers: String, topic: String, groupId: String) {
 
   def receiveMessages(): Unit = {
     while (true) {
-      val records: ConsumerRecords[String, String] = consumer.poll(Duration.ofSeconds(1))
+      val records: ConsumerRecords[String, Map[String, String]] = consumer.poll(Duration.ofSeconds(1))
       for (record <- records.asScala) {
         println(record.value())
       }
