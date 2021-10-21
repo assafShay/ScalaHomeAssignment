@@ -41,7 +41,7 @@ class Producer(topic: String, brokers: String) {
 }
 
 class Mapper {
-  def mapper(doc: JValue): JValue = {
+  def map(doc: JValue): JValue = {
     val transformedDoc = doc transformField {
       case JField("ListingStatus", JString("Active Under Contract")) => ("ListingStatus", JString("Pending"))
       case JField("ListingStatus", JString("Closed")) => ("ListingStatus", JString("Sold"))
@@ -71,7 +71,7 @@ object Service extends App {
 
   // transform data
   val mapper = new Mapper
-  doc = mapper.mapper(doc)
+  doc = mapper.map(doc)
 
   // produce to kafka
   val producer = new Producer(brokers = "localhost:9092", topic = "MyTopic1")
