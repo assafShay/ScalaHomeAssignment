@@ -1,11 +1,10 @@
 package consumer
 
-import java.util.Properties
-import scala.jdk.CollectionConverters._
 import org.apache.kafka.clients.consumer.{ConsumerConfig, ConsumerRecords, KafkaConsumer}
 import org.apache.kafka.common.serialization.StringDeserializer
-
 import java.time.Duration
+import java.util.Properties
+import scala.jdk.CollectionConverters._
 
 class Consumer(brokers: String, topic: String, groupId: String) {
 
@@ -34,6 +33,6 @@ class Consumer(brokers: String, topic: String, groupId: String) {
 }
 
 object Service extends App {
-  val consumer = new Consumer(brokers = "localhost:9092", topic = "TestTopic", groupId = "test-group")
+  val consumer = new Consumer(brokers = "localhost:9092", topic = "MyTopic1", groupId = "test-group")
   consumer.receiveMessages()
 }
