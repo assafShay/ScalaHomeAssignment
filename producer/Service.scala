@@ -74,6 +74,6 @@ object Service extends App {
   doc = mapper.map(doc)
 
   // produce to kafka
-  val producer = new Producer(brokers = "localhost:9092", topic = "MyTopic1")
+  val producer = new Producer(brokers = "localhost:9092", topic = "listing-topic")
   producer.sendMessages(doc)
 }
