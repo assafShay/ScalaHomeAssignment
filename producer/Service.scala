@@ -8,7 +8,7 @@ import org.apache.kafka.common.serialization.StringSerializer
 
 class Producer(topic: String, brokers: String) {
 
-  val producer = new KafkaProducer[String, Map[String, String]](configuration)
+  val producer = new KafkaProducer[String, String](configuration)
 
   private def configuration: Properties = {
     val props = new Properties()
@@ -25,8 +25,8 @@ class Producer(topic: String, brokers: String) {
         JObject(obj) <- objList
       } {
         val kvList = for ((key, JString(value)) <- obj) yield (key, value)
-        val record = new ProducerRecord[String, Map[String, String]](topic, kvList.toMap)
-
+        val record = new ProducerRecord[String, String](topic, kvList.toMap.toString())
+        println(record)
         producer.send(record)
       }
     }
