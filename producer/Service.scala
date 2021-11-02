@@ -12,6 +12,7 @@ class Producer(topic: String, brokers: String) {
 
   private def configuration: Properties = {
     val props = new Properties()
+
     props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, brokers)
     props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, classOf[StringSerializer].getCanonicalName)
     props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, classOf[StringSerializer].getCanonicalName)
@@ -26,7 +27,7 @@ class Producer(topic: String, brokers: String) {
       } {
         val kvList = for ((key, JString(value)) <- obj) yield (key, value)
         val record = new ProducerRecord[String, String](topic, kvList.toMap.toString())
-        println(record)
+        //println(record)
         producer.send(record)
       }
     }
@@ -67,13 +68,13 @@ class Mapper {
 object Service extends App {
   // parse document
   val FILE_PATH: String = "C:\\ScalaP\\udemy-scala-for-beginners\\src\\main\\scala\\producer\\data.json"
-  var doc = parse(os.read(os.pwd / FILE_PATH))
+  val doc = parse(os.read(os.pwd / FILE_PATH))
 
   // transform data
   val mapper = new Mapper
-  doc = mapper.map(doc)
+  val transformedDoc = mapper.map(doc)
 
   // produce to kafka
   val producer = new Producer(brokers = "localhost:9092", topic = "listing-topic")
-  producer.sendMessages(doc)
+  producer.sendMessages(transformedDoc)
 }
