@@ -24,25 +24,26 @@ class Consumer(brokers: String, topic: String, groupId: String) {
     props
   }
 
-  // creating a spark session
-  val spark = SparkSession.builder()
-    .appName("consumer")
-    .config("spark-master", "local")
-    .getOrCreate()
-
-  // create schema
-  val listingSchema = StructType(
-    Array(
-      StructField("ListingId", StringType),
-      StructField("Price", StringType),
-      StructField("Address", StringType),
-      StructField("ProviderName", StringType),
-      StructField("ListingStatus", StringType),
-      StructField("HouseType", StringType),
-      StructField("ModificationTimestamp", StringType)
-    ))
-
   def receiveMessages(): Unit = {
+    
+    // creating a spark session
+    val spark = SparkSession.builder()
+      .appName("consumer")
+      .config("spark-master", "local")
+      .getOrCreate()
+
+    // create schema
+    val listingSchema = StructType(
+      Array(
+        StructField("ListingId", StringType),
+        StructField("Price", StringType),
+        StructField("Address", StringType),
+        StructField("ProviderName", StringType),
+        StructField("ListingStatus", StringType),
+        StructField("HouseType", StringType),
+        StructField("ModificationTimestamp", StringType)
+      ))
+    
     while (true) {
       val records: ConsumerRecords[String, String] = consumer.poll(Duration.ofSeconds(1))
       for (record <- records.asScala) {
