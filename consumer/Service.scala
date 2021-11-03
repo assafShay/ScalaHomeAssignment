@@ -5,6 +5,8 @@ import org.apache.kafka.common.serialization.StringDeserializer
 import java.time.Duration
 import java.util.Properties
 import scala.jdk.CollectionConverters._
+import org.apache.spark.sql.SparkSession
+import org.apache.spark.sql.types.{StringType, StructField, StructType}
 
 class Consumer(brokers: String, topic: String, groupId: String) {
 
@@ -21,6 +23,23 @@ class Consumer(brokers: String, topic: String, groupId: String) {
     props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest")
     props
   }
+
+  // creating a spark session
+  val spark = SparkSession.builder()
+    .appName("consumer")
+    .config("spark-master", "local")
+    .getOrCreate()
+
+  val listingSchema = StructType(
+    Array(
+      StructField("ListingId", StringType),
+      StructField("Price", StringType),
+      StructField("Address", StringType),
+      StructField("ProviderName", StringType),
+      StructField("ListingStatus", StringType),
+      StructField("HouseType", StringType),
+      StructField("ModificationTimestamp", StringType)
+    ))
 
   def receiveMessages(): Unit = {
     while (true) {
