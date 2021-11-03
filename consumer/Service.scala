@@ -30,6 +30,7 @@ class Consumer(brokers: String, topic: String, groupId: String) {
     .config("spark-master", "local")
     .getOrCreate()
 
+  // create schema
   val listingSchema = StructType(
     Array(
       StructField("ListingId", StringType),
