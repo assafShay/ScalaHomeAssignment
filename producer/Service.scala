@@ -67,7 +67,7 @@ class Mapper {
 
 object Service extends App {
   // parse document
-  val FILE_PATH: String = "C:\\ScalaP\\udemy-scala-for-beginners\\src\\main\\scala\\producer\\data.json"
+  val FILE_PATH: String = "C:\\ScalaP\\ScalaHomeAssignment\\src\\main\\scala\\producer\\data.json"
   val doc = parse(os.read(os.pwd / FILE_PATH))
 
   // transform data
